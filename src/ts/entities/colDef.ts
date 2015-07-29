@@ -1,5 +1,11 @@
 module awk.grid {
 
+    /** Array of following objects should be used to pass data for 'select' control */
+    export interface selectOptionsData {
+        text: string;
+        value: string;
+    }
+    
     export interface ColDef {
         /** The name to render in the column header */
         headerName: string;
@@ -83,6 +89,12 @@ module awk.grid {
 
         /** Set to true if this col is editable, otherwise false. Can also be a function to have different rows editable. */
         editable?: boolean | (Function);
+        
+        /** What kind of edit control we want to use? */
+        editControl?: string;
+        
+        /** Data to use with edit control */
+        editControlData?: selectOptionsData[];
 
         /** Callbacks for editing.See editing section for further details. */
         newValueHandler?: Function;

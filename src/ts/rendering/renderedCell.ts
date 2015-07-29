@@ -132,20 +132,66 @@ module awk.grid {
             var that = this;
             this.editingCell = true;
             _.removeAllChildren(this.vGridCell.getElement());
-            var eInput = document.createElement('input');
-            eInput.type = 'text';
-            _.addCssClass(eInput, 'ag-cell-edit-input');
-
-            var value = this.getValue();
-            if (value !== null && value !== undefined) {
-                eInput.value = value;
+            
+            var colDef = this.column.colDef;
+            var editControl = '';
+            if (typeof colDef.editControl === 'string') {
+                editControl = colDef.editControl;
             }
-
-            eInput.style.width = (this.column.actualWidth - 14) + 'px';
-            this.vGridCell.appendChild(eInput);
-            eInput.focus();
-            eInput.select();
-
+                       
+            if(editControl == '')
+                editControl = 'text';
+            
+            var eInput : any;
+            
+            switch(editControl) {
+                case "text": {
+                    eInput = document.createElement('input');
+                    eInput.type = editControl;
+                    _.addCssClass(eInput, 'ag-cell-edit-input');
+        
+                    var value = this.getValue();
+                    if (value !== null && value !== undefined) {
+                        eInput.value = value;
+                    }
+                    
+                    eInput.style.width = (this.column.actualWidth - 14) + 'px';
+                    this.vGridCell.appendChild(eInput);
+                    eInput.focus();
+                    eInput.select();
+                    
+                    break;
+                }
+                
+                case "select": {
+                    eInput = document.createElement('select');
+                    
+                    _.addCssClass(eInput, 'ag-cell-edit-input');
+                    
+                    var value = this.getValue();
+                    if (value !== null && value !== undefined) {
+                        eInput.value = value;
+                    }
+                    
+                    for(var i=0; i<colDef.editControlData.length; i++) {
+                        var opt = document.createElement("option");
+                        opt.value = colDef.editControlData[i].value;
+                        opt.text = colDef.editControlData[i].text;
+                        
+                        if(value == opt.value)
+                            opt.selected = true;
+                            
+                        eInput.add(opt, null);  
+                    }
+                    
+                    eInput.style.width = (this.column.actualWidth - 14) + 'px';
+                    this.vGridCell.appendChild(eInput);
+                    eInput.focus();
+                    
+                    break;
+                }
+            }               
+            
             var blurListener = function () {
                 that.stopEditing(eInput, blurListener);
             };
